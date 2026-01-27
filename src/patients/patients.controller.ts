@@ -1,16 +1,25 @@
 import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
-import { PatientsService } from './patients.service';
+import { PatientsService, DatosPaciente } from './patients.service';
 
-@Controller('patients')
+@Controller('pacientes')
 export class PatientsController {
   constructor(private readonly patientsService: PatientsService) {}
 
-  @Get('by-rut/:rut')
-  async getByRut(@Param('rut') rut: string) {
-    const patientNumber = await this.patientsService.findByRut(rut);
-    if (patientNumber == null) {
+  @Get('por-rut/:rut')
+  async obtenerPorRut(@Param('rut') rut: string): Promise<DatosPaciente> {
+    const patientData = await this.patientsService.buscarPorRut(rut);
+    if (patientData == null) {
       throw new NotFoundException('Paciente no encontrado');
     }
-    return { patientNumber };
+    return patientData;
+  }
+
+  @Get('por-ficha/:fileNumber')
+  async obtenerPorFicha(@Param('fileNumber') fileNumber: string): Promise<DatosPaciente> {
+    const patientData = await this.patientsService.buscarPorFicha(fileNumber);
+    if (patientData == null) {
+      throw new NotFoundException('Paciente no encontrado');
+    }
+    return patientData;
   }
 }
